@@ -1,81 +1,13 @@
 "use client";
-import { useContext, useState } from "react";
-import { addToast } from "@heroui/react";
+import { useContext } from "react";
 import EventContext from "../Context/EventContext";
 import ParticipantCard from "../Components/Participant/ParticipantCard";
-import ConfirmDeleteModal from "../Components/ConfirmDeleteModal";
-import ConfirmModal from "../Components/ConfirmModal";
-import EditForm from "./edit/EditForm";
+import ParticipantModals from "../Components/Participant/ParticipantModals";
 import SearchBar from "../Components/SearchBar";
-import {
-  validateParticipant,
-  showErrorToast,
-  showSuccessToast,
-} from "../utils/formValidation";
 
 export default function Home() {
   const { participants, removeParticipant, editParticipant } =
     useContext(EventContext);
-
-  // State untuk modal
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [selectedParticipant, setSelectedParticipant] = useState(null);
-  const [editFormData, setEditFormData] = useState(null);
-  const [editErrors, setEditErrors] = useState({});
-  const [showEditConfirm, setShowEditConfirm] = useState(false);
-
-  // Handler untuk hapus
-  const handleDelete = (participant) => {
-    setSelectedParticipant(participant);
-    setShowDeleteModal(true);
-  };
-
-  // Handler untuk konfirmasi hapus 'iya'
-  const handleConfirmDelete = () => {
-    removeParticipant(selectedParticipant.id);
-    setShowDeleteModal(false);
-    setSelectedParticipant(null);
-  };
-
-  // Handler untuk edit
-  const handleEdit = (participant) => {
-    setSelectedParticipant(participant);
-    setEditFormData({ ...participant });
-    setEditErrors({});
-    setShowEditModal(true);
-  };
-
-  // Saat klik "Simpan Perubahan" di form edit untuk validasi
-  const handleEditSubmit = (e) => {
-    e.preventDefault();
-    const newErrors = validateParticipant(editFormData);
-    setEditErrors(newErrors);
-    if (Object.keys(newErrors).length > 0) {
-      showErrorToast();
-      return;
-    }
-    setShowEditConfirm(true); //modal konfirmasi edit muncul
-  };
-
-  // Jika user klik "Iya" pada modal konfirmasi edit
-  const handleConfirmEdit = () => {
-    editParticipant(selectedParticipant.id, editFormData);
-    showSuccessToast("Data peserta berhasil diperbarui.");
-    setShowEditModal(false);
-    setShowEditConfirm(false);
-    setSelectedParticipant(null);
-    setEditFormData(null);
-    setEditErrors({});
-  };
-
-  // Jika user batal edit
-  const handleCancelEdit = () => {
-    setShowEditModal(false);
-    setEditFormData(null);
-    setSelectedParticipant(null);
-    setEditErrors({});
-  };
 
   return (
     <section className="max-w-6xl mx-auto mt-12 ">
@@ -114,61 +46,22 @@ export default function Home() {
           </p>
         </div>
       ) : (
-        <>
-          {/* Modal Hapus */}
-          <ConfirmDeleteModal
-            show={showDeleteModal}
-            name={selectedParticipant?.name}
-            onConfirm={handleConfirmDelete}
-            onCancel={() => setShowDeleteModal(false)}
-          />
-
-          {/* Modal Edit: tampilkan form edit di modal */}
-          {showEditModal && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30">
-              <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full border border-indigo-100">
-                <h4 className="text-lg font-bold text-gray-800 mb-4 text-center">
-                  Edit Data Peserta
-                </h4>
-                <EditForm
-                  editForm={editFormData}
-                  onChange={(e) =>
-                    setEditFormData((prev) => ({
-                      ...prev,
-                      [e.target.name]: e.target.value,
-                    }))
-                  }
-                  onCancel={handleCancelEdit}
-                  onSubmit={handleEditSubmit}
-                  errors={editErrors}
+        <ParticipantModals
+          removeParticipant={removeParticipant}
+          editParticipant={editParticipant}>
+          {({ handleEdit, handleDelete }) => (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 pb-0">
+              {participants.map((participant) => (
+                <ParticipantCard
+                  key={participant.id}
+                  participant={participant}
+                  onEdit={() => handleEdit(participant)}
+                  onDelete={() => handleDelete(participant)}
                 />
-              </div>
+              ))}
             </div>
           )}
-
-          {/* Modal Konfirmasi Edit */}
-          <ConfirmModal
-            show={showEditConfirm}
-            onCancel={() => setShowEditConfirm(false)}
-            onConfirm={handleConfirmEdit}
-            title="Konfirmasi Perubahan Data"
-            message="Apakah Anda yakin ingin menyimpan perubahan data peserta ini?"
-          />
-
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 pb-0">
-            {participants.map((participant) => (
-              <div
-                key={participant.id}
-                className="transition-transform duration-300 hover:scale-103 hover:shadow-xl rounded-2xl">
-                <ParticipantCard
-                  participant={participant}
-                  onDelete={() => handleDelete(participant)}
-                  onEdit={() => handleEdit(participant)}
-                />
-              </div>
-            ))}
-          </div>
-        </>
+        </ParticipantModals>
       )}
     </section>
   );

@@ -2,6 +2,7 @@
 
 import { Geist, Geist_Mono } from "next/font/google";
 import { HeroUIProvider, ToastProvider } from "@heroui/react";
+import {useTheme} from "@heroui/use-theme";
 import "./globals.css";
 import { EventProvider } from "../Context/EventContext";
 import Link from "next/link";

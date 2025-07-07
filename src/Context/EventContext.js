@@ -61,6 +61,9 @@ export const EventProvider = ({ children }) => {
     );
   };
 
+  // filter by a-z
+  
+
   return (
     <EventContext.Provider
       value={{
