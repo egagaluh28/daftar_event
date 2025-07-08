@@ -1,4 +1,3 @@
-// tailwind.config.js
 import { heroui } from "@heroui/react";
 
 module.exports = {
