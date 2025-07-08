@@ -1,12 +1,12 @@
 import ConfirmDeleteModal from "../ConfirmDeleteModal";
 import ConfirmModal from "../ConfirmModal";
-import EditForm from "../../app/edit/EditForm";
+import EditForm from "./ParticipantEditForm";
 import { useState } from "react";
 import {
   validateParticipant,
   showErrorToast,
   showSuccessToast,
-} from "../../utils/formValidation";
+} from "../formValidation";
 
 export default function ParticipantModals({
   removeParticipant,
@@ -41,7 +41,6 @@ export default function ParticipantModals({
     setShowEditModal(true);
   };
 
-//   
   const handleEditSubmit = (e) => {
     e.preventDefault();
     const newErrors = validateParticipant(editFormData);

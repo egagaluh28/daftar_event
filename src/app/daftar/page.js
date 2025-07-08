@@ -1,4 +1,3 @@
-// src/app/daftar/page.js
 "use client";
 
 import { useContext, useState } from "react";
@@ -11,7 +10,7 @@ import {
   validateParticipant,
   showErrorToast,
   showSuccessToast,
-} from "../../utils/formValidation";
+} from "../../Components/formValidation";
 
 export default function RegisterPage() {
   const { addParticipant } = useContext(EventContext);

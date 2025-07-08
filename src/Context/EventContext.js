@@ -1,5 +1,4 @@
-// src/app/context/EventContext.js
-"use client"; 
+"use client";
 
 import { createContext, useState, useEffect } from "react";
 
@@ -53,16 +52,17 @@ export const EventProvider = ({ children }) => {
   };
 
   // Fungsi untuk mencari peserta berdasarkan nama atau email
-  const searchParticipant = (query) => {
+  const searchParticipant = (search) => {
+    if (!search) return participants;
+    const lower = search.toLowerCase();
     return participants.filter(
-      (participant) =>
-        participant.name.toLowerCase().includes(query.toLowerCase()) ||
-        participant.email.toLowerCase().includes(query.toLowerCase())
+      (p) =>
+        p.name.toLowerCase().includes(lower) ||
+        p.email.toLowerCase().includes(lower)
     );
   };
 
   // filter by a-z
-  
 
   return (
     <EventContext.Provider
@@ -71,7 +71,7 @@ export const EventProvider = ({ children }) => {
         addParticipant,
         removeParticipant,
         editParticipant,
-        searchParticipant
+        searchParticipant,
       }}>
       {children}
     </EventContext.Provider>

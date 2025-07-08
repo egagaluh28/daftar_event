@@ -1,20 +1,26 @@
 "use client";
-import { useContext } from "react";
+import { useContext, useState } from "react";
+
 import EventContext from "../Context/EventContext";
 import ParticipantCard from "../Components/Participant/ParticipantCard";
 import ParticipantModals from "../Components/Participant/ParticipantModals";
 import SearchBar from "../Components/SearchBar";
 
 export default function Home() {
-  const { participants, removeParticipant, editParticipant } =
-    useContext(EventContext);
+  const {
+    participants,
+    removeParticipant,
+    editParticipant,
+    searchParticipant,
+  } = useContext(EventContext);
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const filteredParticipants = searchParticipant(searchQuery);
 
   return (
     <section className="max-w-6xl mx-auto mt-12 ">
       {/* Search Bar */}
-      <div className="mb-8">
-        <SearchBar />
-      </div>
+      
       <div className="mb-10 text-center">
         <h2 className="text-4xl font-extrabold text-indigo-900 mb-3 tracking-tight drop-shadow-lg leading-tight">
           Daftar Peserta Workshop Eksklusif
@@ -24,7 +30,10 @@ export default function Home() {
           workshop kami.
         </p>
       </div>
-      {participants.length === 0 ? (
+      <div className="mb-8">
+        <SearchBar onSearch={setSearchQuery} />
+      </div>
+      {filteredParticipants.length === 0 ? (
         <div className="flex flex-col items-center py-20 bg-white rounded-2xl shadow-inner border border-gray-100">
           <svg
             className="w-20 h-20 text-indigo-300 mb-6 opacity-75"
@@ -51,7 +60,7 @@ export default function Home() {
           editParticipant={editParticipant}>
           {({ handleEdit, handleDelete }) => (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 pb-0">
-              {participants.map((participant) => (
+              {filteredParticipants.map((participant) => (
                 <ParticipantCard
                   key={participant.id}
                   participant={participant}
