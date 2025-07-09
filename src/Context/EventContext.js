@@ -4,11 +4,13 @@ import { createContext, useState, useEffect } from "react";
 
 const EventContext = createContext();
 
-
 export const EventProvider = ({ children }) => {
   const [participants, setParticipants] = useState([]);
-    const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [selectedSesi, setSelectedSesi] = useState(null);
+  // sort by A-Z
+  const [sortBy, setSortBy] = useState("name");
+  const [sortOrder, setSortOrder] = useState("asc");
 
   // Muat data dari localStorage saat komponen mount
   useEffect(() => {
@@ -65,6 +67,15 @@ export const EventProvider = ({ children }) => {
         p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         p.email.toLowerCase().includes(searchQuery.toLowerCase())
       );
+    })
+    .sort((a, b) => {
+      if (sortBy === "name") {
+        if (sortOrder === "asc") {
+          return a.name.localeCompare(b.name);
+        } else {
+          return b.name.localeCompare(a.name);
+        }
+      }
     });
 
   // Fungsi untuk mencari peserta berdasarkan nama atau email
@@ -96,6 +107,8 @@ export const EventProvider = ({ children }) => {
         searchQuery,
         setSearchQuery,
         filteredParticipants,
+        setSortBy,
+        setSortOrder,
       }}>
       {children}
     </EventContext.Provider>

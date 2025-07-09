@@ -5,6 +5,7 @@ import ParticipantCard from "../Components/Participant/ParticipantCard";
 import ParticipantModals from "../Components/Participant/ParticipantModals";
 import SearchBar from "../Components/SearchBar";
 import FilterBySesi from "../Components/FilterBySesi";
+import SortByAz from "../Components/SortByAz";
 
 export default function Home() {
   const {
@@ -15,6 +16,10 @@ export default function Home() {
     setSearchQuery,
     setSelectedSesi,
     selectedSesi,
+    setSortBy,
+    setSortOrder,
+    sortBy,
+    sortOrder,
   } = useContext(EventContext);
 
   return (
@@ -37,15 +42,17 @@ export default function Home() {
           />
         </div>
         <div className="col-span-1 p-2">
-          <SearchBar onSearch={setSearchQuery} />
+          <SortByAz
+            onSortChange={(sortBy, sortOrder) => {
+              setSortBy(sortBy);
+              setSortOrder(sortOrder);
+            }}
+            sortBy={sortBy}
+            sortOrder={sortOrder}
+          />
         </div>
-
         <div className="col-span-1 p-2">
-          {/* <button
-            onClick={() => setSelectedSesi(null)}
-            className="px-4 py-2 bg-indigo-500 text-white rounded-lg shadow hover:bg-indigo-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2">
-            Tampilkan Semua
-          </button> */}
+          <SearchBar onSearch={setSearchQuery} />
         </div>
       </div>
       {filteredParticipants.length === 0 ? (
