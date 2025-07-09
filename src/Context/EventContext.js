@@ -4,8 +4,11 @@ import { createContext, useState, useEffect } from "react";
 
 const EventContext = createContext();
 
+
 export const EventProvider = ({ children }) => {
   const [participants, setParticipants] = useState([]);
+    const [searchQuery, setSearchQuery] = useState("");
+  const [selectedSesi, setSelectedSesi] = useState(null);
 
   // Muat data dari localStorage saat komponen mount
   useEffect(() => {
@@ -51,6 +54,19 @@ export const EventProvider = ({ children }) => {
     );
   };
 
+  const filteredParticipants = participants
+    .filter((p) => {
+      if (!selectedSesi) return true;
+      return p.session === selectedSesi;
+    })
+    .filter((p) => {
+      if (!searchQuery) return true;
+      return (
+        p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.email.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    });
+
   // Fungsi untuk mencari peserta berdasarkan nama atau email
   // const searchParticipant = (search) => {
   //   if (!search) return participants;
@@ -62,12 +78,11 @@ export const EventProvider = ({ children }) => {
   //   );
   // };
 
-// filter by sesi
+  // filter by sesi
   // const filterBySession = (session) => {
   //   if (!session) return participants;
   //   return participants.filter((p) => p.session === session);
   // };
-
 
   return (
     <EventContext.Provider
@@ -76,8 +91,11 @@ export const EventProvider = ({ children }) => {
         addParticipant,
         removeParticipant,
         editParticipant,
-        // searchParticipant,
-        // filterBySession,
+        selectedSesi,
+        setSelectedSesi,
+        searchQuery,
+        setSearchQuery,
+        filteredParticipants,
       }}>
       {children}
     </EventContext.Provider>

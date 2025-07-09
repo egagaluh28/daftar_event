@@ -9,7 +9,7 @@ const sesiList = [
 export default function FilterBySesi({ onSelectSesi, selectedSesi }) {
   return (
     <Autocomplete
-      className="max-w-xs"
+      className=""
       placeholder="Pilih Sesi"
       defaultItems={sesiList}
       selectedKey={selectedSesi}

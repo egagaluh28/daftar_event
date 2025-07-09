@@ -7,24 +7,15 @@ import SearchBar from "../Components/SearchBar";
 import FilterBySesi from "../Components/FilterBySesi";
 
 export default function Home() {
-  const { participants, removeParticipant, editParticipant } =
-    useContext(EventContext);
-
-  const [searchQuery, setSearchQuery] = useState("");
-  const [selectedSesi, setSelectedSesi] = useState(null);
-
-  const filteredParticipants = participants
-    .filter((p) => {
-      if (!selectedSesi) return true;
-      return p.session === selectedSesi;
-    })
-    .filter((p) => {
-      if (!searchQuery) return true;
-      return (
-        p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.email.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    });
+  const {
+    participants,
+    removeParticipant,
+    editParticipant,
+    filteredParticipants,
+    setSearchQuery,
+    setSelectedSesi,
+    selectedSesi,
+  } = useContext(EventContext);
 
   return (
     <section className="max-w-6xl mx-auto mt-12 ">
@@ -39,15 +30,16 @@ export default function Home() {
       </div>
 
       <div className="grid grid-flow-col grid-rows gap-1 mb-6 ">
-        <div className="col-span-1 p-2 justify-end">
-          <SearchBar onSearch={setSearchQuery} />
-        </div>
-        <div className="col-span-1 p-2 flex">
+        <div className="col-span-1 p-2">
           <FilterBySesi
             onSelectSesi={(sesi) => setSelectedSesi(sesi)}
             selectedSesi={selectedSesi}
           />
         </div>
+        <div className="col-span-1 p-2">
+          <SearchBar onSearch={setSearchQuery} />
+        </div>
+
         <div className="col-span-1 p-2">
           {/* <button
             onClick={() => setSelectedSesi(null)}
