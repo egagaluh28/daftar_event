@@ -1,26 +1,33 @@
 "use client";
 import { useContext, useState } from "react";
-
 import EventContext from "../Context/EventContext";
 import ParticipantCard from "../Components/Participant/ParticipantCard";
 import ParticipantModals from "../Components/Participant/ParticipantModals";
 import SearchBar from "../Components/SearchBar";
+import FilterBySesi from "../Components/FilterBySesi";
 
 export default function Home() {
-  const {
-    participants,
-    removeParticipant,
-    editParticipant,
-    searchParticipant,
-  } = useContext(EventContext);
+  const { participants, removeParticipant, editParticipant } =
+    useContext(EventContext);
 
   const [searchQuery, setSearchQuery] = useState("");
-  const filteredParticipants = searchParticipant(searchQuery);
+  const [selectedSesi, setSelectedSesi] = useState(null);
+
+  const filteredParticipants = participants
+    .filter((p) => {
+      if (!selectedSesi) return true;
+      return p.session === selectedSesi;
+    })
+    .filter((p) => {
+      if (!searchQuery) return true;
+      return (
+        p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.email.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    });
 
   return (
     <section className="max-w-6xl mx-auto mt-12 ">
-      {/* Search Bar */}
-      
       <div className="mb-10 text-center">
         <h2 className="text-4xl font-extrabold text-indigo-900 mb-3 tracking-tight drop-shadow-lg leading-tight">
           Daftar Peserta Workshop Eksklusif
@@ -30,8 +37,24 @@ export default function Home() {
           workshop kami.
         </p>
       </div>
-      <div className="mb-8">
-        <SearchBar onSearch={setSearchQuery} />
+
+      <div className="grid grid-flow-col grid-rows gap-1 mb-6 ">
+        <div className="col-span-1 p-2 justify-end">
+          <SearchBar onSearch={setSearchQuery} />
+        </div>
+        <div className="col-span-1 p-2 flex">
+          <FilterBySesi
+            onSelectSesi={(sesi) => setSelectedSesi(sesi)}
+            selectedSesi={selectedSesi}
+          />
+        </div>
+        <div className="col-span-1 p-2">
+          {/* <button
+            onClick={() => setSelectedSesi(null)}
+            className="px-4 py-2 bg-indigo-500 text-white rounded-lg shadow hover:bg-indigo-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:ring-offset-2">
+            Tampilkan Semua
+          </button> */}
+        </div>
       </div>
       {filteredParticipants.length === 0 ? (
         <div className="flex flex-col items-center py-20 bg-white rounded-2xl shadow-inner border border-gray-100">

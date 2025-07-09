@@ -52,17 +52,22 @@ export const EventProvider = ({ children }) => {
   };
 
   // Fungsi untuk mencari peserta berdasarkan nama atau email
-  const searchParticipant = (search) => {
-    if (!search) return participants;
-    const lower = search.toLowerCase();
-    return participants.filter(
-      (p) =>
-        p.name.toLowerCase().includes(lower) ||
-        p.email.toLowerCase().includes(lower)
-    );
-  };
+  // const searchParticipant = (search) => {
+  //   if (!search) return participants;
+  //   const lower = search.toLowerCase();
+  //   return participants.filter(
+  //     (p) =>
+  //       p.name.toLowerCase().includes(lower) ||
+  //       p.email.toLowerCase().includes(lower)
+  //   );
+  // };
 
-  // filter by a-z
+// filter by sesi
+  // const filterBySession = (session) => {
+  //   if (!session) return participants;
+  //   return participants.filter((p) => p.session === session);
+  // };
+
 
   return (
     <EventContext.Provider
@@ -71,7 +76,8 @@ export const EventProvider = ({ children }) => {
         addParticipant,
         removeParticipant,
         editParticipant,
-        searchParticipant,
+        // searchParticipant,
+        // filterBySession,
       }}>
       {children}
     </EventContext.Provider>

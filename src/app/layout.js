@@ -6,6 +6,7 @@ import "./globals.css";
 import { EventProvider } from "../Context/EventContext";
 import { Header } from "../Components/partials/Header";
 
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],

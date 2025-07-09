@@ -1,91 +1,81 @@
 "use client";
 
-import { Input } from "@heroui/react";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { Autocomplete, AutocompleteItem } from "@heroui/react";
+import EventContext from "../../Context/EventContext";
+import ParticipantCard from "../../Components/Participant/ParticipantCard";
+import ParticipantModals from "../../Components/Participant/ParticipantModals";
 
-// Komponen ikon pencarian
-export const SearchIcon = (props) => (
-  <svg
-    aria-hidden="true"
-    fill="none"
-    focusable="false"
-    height="1em"
-    role="presentation"
-    viewBox="0 0 24 24"
-    width="1em"
-    {...props}
-  >
-    <path
-      d="M11.5 21C16.7467 21 21 16.7467 21 11.5C21 6.25329 16.7467 2 11.5 2C6.25329 2 2 6.25329 2 11.5C2 16.7467 6.25329 21 11.5 21Z"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="2"
-    />
-    <path
-      d="M22 22L20 20"
-      stroke="currentColor"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth="2"
-    />
-  </svg>
-);
+export const sesiList = [
+  { label: "Sesi Pagi (09:00 - 12:00 WIB)", key: "Pagi" },
+  { label: "Sesi Siang (14:00 - 17:00 WIB)", key: "Siang" },
+];
 
-// Komponen SearchBar
-export default function SearchBar({ onSearch }) {
-  const [query, setQuery] = useState("");
+export default function FilterBySesi() {
+  const { participants, removeParticipant, editParticipant } =
+    useContext(EventContext);
 
-  const handleInputChange = (e) => {
-    setQuery(e.target.value);
-  };
+  const [selectedSesi, setSelectedSesi] = useState(null);
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (query.trim() !== "") {
-      onSearch?.(query.trim());
-    }
-  };
+  const filteredParticipants = selectedSesi
+    ? participants.filter((p) => p.session === selectedSesi)
+    : participants;
 
   return (
-    <form onSubmit={handleSearch} className="flex gap-2">
-      <Input
-        isClearable
-        value={query}
-        onChange={handleInputChange}
-        placeholder="Cari peserta berdasarkan nama atau email..."
-        radius="lg"
-        startContent={
-          <SearchIcon className="text-black/50 mb-0.5 dark:text-white/90 text-slate-400 pointer-events-none flex-shrink-0" />
-        }
-        classNames={{
-          label: "text-black/50 dark:text-white/90",
-          input: [
-            "bg-transparent",
-            "text-black/90 dark:text-white/90",
-            "placeholder:text-default-700/50 dark:placeholder:text-white/60",
-          ],
-          innerWrapper: "bg-transparent",
-          inputWrapper: [
-            "shadow-xl",
-            "bg-default-200/50",
-            "dark:bg-default/60",
-            "backdrop-blur-xl",
-            "backdrop-saturate-200",
-            "hover:bg-default-200/70",
-            "dark:hover:bg-default/70",
-            "group-data-[focus=true]:bg-default-200/50",
-            "dark:group-data-[focus=true]:bg-default/60",
-            "!cursor-text",
-          ],
-        }}
-      />
-      <button
-        type="submit"
-        className="px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition"
+    <section className="max-w-6xl mx-auto mt-12">
+      {/* Dropdown Filter */}
+      <Autocomplete
+        className="max-w-xs mb-6"
+        defaultItems={sesiList}
+        label="Filter by Sesi"
+        placeholder="Pilih Sesi"
+        onSelectionChange={(selectedKey) => setSelectedSesi(selectedKey)}
       >
-        Cari
-      </button>
-    </form>
+        {(sesi) => (
+          <AutocompleteItem key={sesi.key}>{sesi.label}</AutocompleteItem>
+        )}
+      </Autocomplete>
+
+      {/* Daftar Peserta */}
+      {filteredParticipants.length === 0 ? (
+        <div className="flex flex-col items-center py-20 bg-white rounded-2xl shadow-inner border border-gray-100">
+          <svg
+            className="w-20 h-20 text-indigo-300 mb-6 opacity-75"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={1.5}
+            viewBox="0 0 24 24">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M15.75 9V5.25m0 0A2.25 2.25 0 0013.5 3h-3A2.25 2.25 0 008.25 5.25V9m7.5 0h-7.5m7.5 0v2.25A2.25 2.25 0 0115.75 13.5h-7.5A2.25 2.25 0 016 11.25V9m0 0V5.25A2.25 2.25 0 018.25 3h7.5A2.25 2.25 0 0118 5.25V9z"
+            />
+          </svg>
+          <p className="text-indigo-500 text-xl font-semibold animate-pulse">
+            Belum ada peserta yang terdaftar saat ini.
+          </p>
+          <p className="text-gray-500 text-md mt-2">
+            Informasi akan muncul di sini setelah ada pendaftaran.
+          </p>
+        </div>
+      ) : (
+        <ParticipantModals
+          removeParticipant={removeParticipant}
+          editParticipant={editParticipant}>
+          {({ handleEdit, handleDelete }) => (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 pb-0">
+              {filteredParticipants.map((participant) => (
+                <ParticipantCard
+                  key={participant.id}
+                  participant={participant}
+                  onEdit={() => handleEdit(participant)}
+                  onDelete={() => handleDelete(participant)}
+                />
+              ))}
+            </div>
+          )}
+        </ParticipantModals>
+      )}
+    </section>
   );
 }
